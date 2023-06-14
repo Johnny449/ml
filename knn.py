@@ -1,112 +1,37 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[50]:
-
-
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as mtp  
-
-
-# In[51]:
-
-
-ds= pd.read_csv('User_Data.csv')
-ds
-
-
-# In[52]:
-
-
-x=ds.iloc[:,[2,3]].values
-y=ds.iloc[:,4].values
-
-
-# In[53]:
-
-
-from sklearn.model_selection import train_test_split  
-x_train, x_test, y_train, y_test= train_test_split(x, y, test_size= 0.25, random_state=0)
-
-
-# In[54]:
-
-
-from sklearn.preprocessing import StandardScaler
-st_x=StandardScaler()
-x_train=st_x.fit_transform(x_train)
-x_test=st_x.transform(x_test)
-print(x_test)
-print(y_test)
-
-
-# In[62]:
-
-
 from sklearn.neighbors import KNeighborsClassifier
-classifier =KNeighborsClassifier(n_neighbors=5,metric='minkowski',p=2)
-classifier.fit(x_train,y_train)
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+import random
 
+data_iris = load_iris()
+label_target = data_iris.target_names
 
-# In[65]:
+label_target = data_iris.target_names
+print("\n Sample Data from Iris Dataset")
+print("*" * 30)
+for i in range(5):
+    rn = random.randint(0, 120)
+    print(data_iris.data[rn], "===>", label_target[data_iris.target[rn]])
+   
+x = data_iris.data
+y = data_iris.target
 
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state=1)
 
-y_pred= classifier.predict(x_test)
+print("The Training dataset length : ", len(x_train))
+print("The Testing dataset length : ", len(x_test))
 
-
-# In[59]:
-
-
-from sklearn.metrics import confusion_matrix  
-cm= confusion_matrix(y_test, y_pred) 
-print(cm)
-
-
-# In[64]:
-
-
-from matplotlib.colors import ListedColormap  
-x_set, y_set = x_train, y_train  
-x1, x2 = np.meshgrid(np.arange(start = x_set[:, 0].min() - 1, stop = x_set[:, 0].max() + 1, step  =0.01),  
-np.arange(start = x_set[:, 1].min() - 1, stop = x_set[:, 1].max() + 1, step = 0.01))  
-mtp.contourf(x1, x2, classifier.predict(nm.array([x1.ravel(), x2.ravel()]).T).reshape(x1.shape),  
-alpha = 0.75, cmap = ListedColormap(('red','green' )))  
-mtp.xlim(x1.min(), x1.max())  
-mtp.ylim(x2.min(), x2.max())  
-for i, j in enumerate(nm.unique(y_set)):  
-    mtp.scatter(x_set[y_set == j, 0], x_set[y_set == j, 1],  
-        c = ListedColormap(('red', 'green'))(i), label = j)  
-mtp.title('K-NN Algorithm (Training set)')  
-mtp.xlabel('Age')  
-mtp.ylabel('Estimated Salary')  
-mtp.legend()  
-mtp.show()
-
-
-# In[67]:
-
-
-from matplotlib.colors import ListedColormap  
-x_set, y_set = x_test, y_test  
-x1, x2 = nm.meshgrid(nm.arange(start = x_set[:, 0].min() - 1, stop = x_set[:, 0].max() + 1, step  =0.01),  
-nm.arange(start = x_set[:, 1].min() - 1, stop = x_set[:, 1].max() + 1, step = 0.01))  
-mtp.contourf(x1, x2, classifier.predict(nm.array([x1.ravel(), x2.ravel()]).T).reshape(x1.shape),  
-alpha = 0.75, cmap = ListedColormap(('red','green' )))  
-mtp.xlim(x1.min(), x1.max())  
-mtp.ylim(x2.min(), x2.max())  
-for i, j in enumerate(nm.unique(y_set)):  
-    mtp.scatter(x_set[y_set == j, 0], x_set[y_set == j, 1],  
-        c = ListedColormap(('red', 'green'))(i), label = j)  
-mtp.title('K-NN algorithm(Test set)')  
-mtp.xlabel('Age')  
-mtp.ylabel('Estimated Salary')  
-mtp.legend()  
-mtp.show()  
-
-
-# In[ ]:
-
-
-
-
+try:
+    nn = int(input("Enter number of neighbours : "))
+    knn = KNeighborsClassifier(nn)
+    knn.fit(x_train, y_train)
+    print("The Score is : ", knn.score(x_test, y_test))
+    test_data = input("Ente Test Data :").split(",")
+    for i in range(len(test_data)):
+        test_data[i] = float(test_data[i])
+    print()
+    v = knn.predict([test_data])
+    print("Predicted outputis :", label_target[v][0])
+except Exception as e:
+    print("Enter Valid Input...")
+    print(e)
